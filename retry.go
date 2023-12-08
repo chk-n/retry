@@ -38,32 +38,19 @@ func NewDefault() *Retry {
 
 // Computes delay after a given number of attempts.
 func (r *Retry) delay(attempt int) time.Duration {
-	if attempt > 49 {
-		// set to floored log(max.Int64) to ensure math.Pow doesnt return +Inf
-		attempt = 49
-	}
+	//if attempt > 49 {
+	//	// set to floored log(max.Int64) to ensure math.Pow doesnt return +Inf
+	//	attempt = 49
+	//}
 
 	rf := r.RandomizationFactor*(r.Rand.Float64()) + 1
-	var delay time.Duration
 
-	b := math.Pow(2, float64(attempt))
-	fmt.Println("b: ", b)
-	if b > math.MaxFloat64 {
-		delay = time.Duration(math.MaxInt64)
-	} else {
-		d := float64(r.DelayFactor) * b * rf
-		fmt.Println("d: ", d)
-		if d > math.MaxFloat64 {
-			delay = time.Duration(math.MaxInt64)
-		} else {
-			delay = time.Duration(d)
-		}
+	d := float64(r.DelayFactor) * math.Pow(2, float64(attempt)) * rf
+	if d > float64(r.MaxDelay) {
+		return r.MaxDelay
 	}
-	fmt.Println("delay: ", delay.Milliseconds())
-	if delay < r.MaxDelay {
-		return delay
-	}
-	return r.MaxDelay
+
+	return time.Duration(d)
 }
 
 // Calls the function fn, retrying up to MaxAttempts times.
