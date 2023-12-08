@@ -47,19 +47,19 @@ func (r *Retry) delay(attempt int) time.Duration {
 	var delay time.Duration
 
 	b := math.Pow(2, float64(attempt))
-	fmt.Println(b)
+	fmt.Println("b: ", b)
 	if b > math.MaxFloat64 {
 		delay = time.Duration(math.MaxInt64)
 	} else {
 		d := float64(r.DelayFactor) * b * rf
-		fmt.Println(d)
+		fmt.Println("d: ", d)
 		if d > math.MaxFloat64 {
 			delay = time.Duration(math.MaxInt64)
 		} else {
 			delay = time.Duration(d)
 		}
 	}
-	fmt.Println(delay.Milliseconds())
+	fmt.Println("delay: ", delay.Milliseconds())
 	if delay < r.MaxDelay {
 		return delay
 	}
