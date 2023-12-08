@@ -45,13 +45,21 @@ func (r *Retry) delay(attempt int) time.Duration {
 
 	rf := r.RandomizationFactor*(r.Rand.Float64()) + 1
 	var delay time.Duration
-	d := float64(r.DelayFactor) * math.Pow(2, float64(attempt)) * rf
-	if d > math.MaxFloat64 {
+
+	b := math.Pow(2, float64(attempt))
+	fmt.Println(b)
+	if b > math.MaxFloat64 {
 		delay = time.Duration(math.MaxInt64)
 	} else {
-		delay = time.Duration(d)
+		d := float64(r.DelayFactor) * b * rf
+		fmt.Println(d)
+		if d > math.MaxFloat64 {
+			delay = time.Duration(math.MaxInt64)
+		} else {
+			delay = time.Duration(d)
+		}
 	}
-
+	fmt.Println(delay.Milliseconds())
 	if delay < r.MaxDelay {
 		return delay
 	}
